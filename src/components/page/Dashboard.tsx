@@ -17,11 +17,15 @@ import Link from '@mui/material/Link';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import { mainListItems } from './listItems.tsx';
-import Chart from './Chart.tsx';
-import Deposits from './Deposits.tsx';
-import Orders from './Orders.tsx';
-import Modal from './Modal.tsx';
+import ListItems from './ListItems';
+import Chart from './Chart';
+import Deposits from './Deposits';
+import Orders from './Orders';
+import Modal from './Modal';
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+import { getFirestore, collection, getDocs } from 'firebase/firestore/lite';
+import StaffsContext from './StaffsContext';
 
 
 function Copyright(props: any) {
@@ -95,9 +99,51 @@ function DashboardContent() {
     setOpen(!open);
   };
 
+  const { modal,setModal,staffs,setStaffs } = StaffsContext.useContainer();
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDVbWOjFGqNiw1ZrwEen2a-fC1AFXbYcfM",
+  authDomain: "my-capricorn-app.firebaseapp.com",
+  databaseURL: "https://my-capricorn-app-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "my-capricorn-app",
+  storageBucket: "my-capricorn-app.appspot.com",
+  messagingSenderId: "736317746971",
+  appId: "1:736317746971:web:2482decc19d14cbe6dedbe",
+  measurementId: "G-Y1JLQF5M0M"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+  const db = getFirestore(app);
+  // Get a list of staffs from database
+// async function getStaffs(db) {
+//   const staffsCol = collection(db, 'staffs');
+//   const staffSnapshot = await getDocs(staffsCol);
+//   const staffList = staffSnapshot.docs.map(doc => doc.data());
+//   console.log(staffList);
+//   return staffList;
+// }
+  const staffsCol = collection(db, "staffs");
+  const getStaffs = async () => {
+  const staffSnapshot = await getDocs(staffsCol);
+  const staffList = staffSnapshot.docs.map(doc => doc.data());
+  const staffListOrderBy = staffList.sort((a, b) => (a.id < b.id) ? -1 : 1)
+
+  return staffListOrderBy;
+  }
+ 
+  if (staffs.length === 0) {
+    getStaffs().then((data) => {
+      setStaffs(data);
+    })
+  }
+  console.log(staffs);
+
   return (
     <ThemeProvider theme={mdTheme}>
       <Modal />
+      
       <Box sx={{ display: 'flex' }}>
         <CssBaseline />
         <AppBar position="absolute" open={open}>
@@ -149,7 +195,7 @@ function DashboardContent() {
           </Toolbar>
           <Divider />
           <List component="nav">
-            {mainListItems}
+            <ListItems />
             <Divider sx={{ my: 1 }} />
           </List>
         </Drawer>
@@ -169,7 +215,7 @@ function DashboardContent() {
           <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             <Grid container spacing={3}>
               {/* Chart */}
-              <Grid item xs={12} md={8} lg={9}>
+              {/* <Grid item xs={12} md={8} lg={9}>
                 <Paper
                   sx={{
                     p: 2,
@@ -180,9 +226,9 @@ function DashboardContent() {
                 >
                   <Chart />
                 </Paper>
-              </Grid>
+              </Grid> */}
               {/* Recent Deposits */}
-              <Grid item xs={12} md={4} lg={3}>
+              {/* <Grid item xs={12} md={4} lg={3}>
                 <Paper
                   sx={{
                     p: 2,
@@ -193,7 +239,7 @@ function DashboardContent() {
                 >
                   <Deposits />
                 </Paper>
-              </Grid>
+              </Grid> */}
               {/* Recent Orders */}
               <Grid item xs={12}>
                 <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>

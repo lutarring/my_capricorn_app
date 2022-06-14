@@ -1,10 +1,14 @@
 import './App.css';
-import DashboardContent from './components/dashboard/Dashboard.tsx'
+import DashboardContent from './components/page/Dashboard'
+import StaffsContext from './components/page/StaffsContext'
 
 function App() {
+  
   return (
     <div className="App">
-      <DashboardContent />
+      <StaffsContext.Provider>
+        <DashboardContent />
+      </StaffsContext.Provider>
     </div>
   );
 }
