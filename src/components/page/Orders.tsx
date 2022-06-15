@@ -1,5 +1,4 @@
 import * as React from 'react';
-import Link from '@mui/material/Link';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -21,24 +20,12 @@ function createData(
   return { id, name, classification, role, organization,mail, phone};
 }
 
-const rows = [
-  createData(
-    1,
-    'yard',
-    '16 Mar, 2019',
-    'Elvis Presley',
-    'Elvis Presley',
-    'Elvis Presley',
-    '09011122232',
-  ),
-];
-
-function preventDefault(event: React.MouseEvent) {
-  event.preventDefault();
-}
+// function preventDefault(event: React.MouseEvent) {
+//   event.preventDefault();
+// }
 
 const Orders = () => {
-  const { staffs, setStaffs } = StaffsContext.useContainer();
+  const { staffs } = StaffsContext.useContainer();
   
   return (
     <React.Fragment>
@@ -67,9 +54,9 @@ const Orders = () => {
           ))}
         </TableBody>
       </Table>
-      <Link color="primary" href="#" onClick={preventDefault} sx={{ mt: 3 }}>
+      {/* <Link color="primary" href="#" onClick={preventDefault} sx={{ mt: 3 }}>
         See more orders
-      </Link>
+      </Link> */}
     </React.Fragment>
   );
 }

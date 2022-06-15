@@ -31,13 +31,18 @@ import { toString } from 'lodash';
 
 function Copyright(props: any) {
   return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{' '}
+    <Typography
+      variant="body2"
+      color="text.secondary"
+      align="center"
+      {...props}
+    >
+      {"Copyright © "}
+      <Link color="inherit" href="https://react-portfolio-b55f5.web.app/">
+        XU LU's Website
+      </Link>{" "}
       {new Date().getFullYear()}
-      {'.'}
+      {"."}
     </Typography>
   );
 }
@@ -49,48 +54,48 @@ interface AppBarProps extends MuiAppBarProps {
 }
 
 const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== 'open',
+  shouldForwardProp: (prop) => prop !== "open",
 })<AppBarProps>(({ theme, open }) => ({
   zIndex: theme.zIndex.drawer + 1,
-  transition: theme.transitions.create(['width', 'margin'], {
+  transition: theme.transitions.create(["width", "margin"], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
   ...(open && {
     marginLeft: drawerWidth,
     width: `calc(100% - ${drawerWidth}px)`,
-    transition: theme.transitions.create(['width', 'margin'], {
+    transition: theme.transitions.create(["width", "margin"], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
     }),
   }),
 }));
 
-const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
-  ({ theme, open }) => ({
-    '& .MuiDrawer-paper': {
-      position: 'relative',
-      whiteSpace: 'nowrap',
-      width: drawerWidth,
-      transition: theme.transitions.create('width', {
+const Drawer = styled(MuiDrawer, {
+  shouldForwardProp: (prop) => prop !== "open",
+})(({ theme, open }) => ({
+  "& .MuiDrawer-paper": {
+    position: "relative",
+    whiteSpace: "nowrap",
+    width: drawerWidth,
+    transition: theme.transitions.create("width", {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+    boxSizing: "border-box",
+    ...(!open && {
+      overflowX: "hidden",
+      transition: theme.transitions.create("width", {
         easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.enteringScreen,
+        duration: theme.transitions.duration.leavingScreen,
       }),
-      boxSizing: 'border-box',
-      ...(!open && {
-        overflowX: 'hidden',
-        transition: theme.transitions.create('width', {
-          easing: theme.transitions.easing.sharp,
-          duration: theme.transitions.duration.leavingScreen,
-        }),
-        width: theme.spacing(7),
-        [theme.breakpoints.up('sm')]: {
-          width: theme.spacing(9),
-        },
-      }),
-    },
-  }),
-);
+      width: theme.spacing(7),
+      [theme.breakpoints.up("sm")]: {
+        width: theme.spacing(9),
+      },
+    }),
+  },
+}));
 
 const mdTheme = createTheme();
 
@@ -100,71 +105,73 @@ function DashboardContent() {
     setOpen(!open);
   };
 
+  const { setModal, staffs, setStaffs, maxId, setMaxId } =
+    StaffsContext.useContainer();
 
-  const { modal,setModal,staffs,setStaffs,maxId,setMaxId } = StaffsContext.useContainer();
+  const firebaseConfig = {
+    apiKey: "AIzaSyDVbWOjFGqNiw1ZrwEen2a-fC1AFXbYcfM",
+    authDomain: "my-capricorn-app.firebaseapp.com",
+    databaseURL:
+      "https://my-capricorn-app-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "my-capricorn-app",
+    storageBucket: "my-capricorn-app.appspot.com",
+    messagingSenderId: "736317746971",
+    appId: "1:736317746971:web:2482decc19d14cbe6dedbe",
+    measurementId: "G-Y1JLQF5M0M",
+  };
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDVbWOjFGqNiw1ZrwEen2a-fC1AFXbYcfM",
-  authDomain: "my-capricorn-app.firebaseapp.com",
-  databaseURL: "https://my-capricorn-app-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "my-capricorn-app",
-  storageBucket: "my-capricorn-app.appspot.com",
-  messagingSenderId: "736317746971",
-  appId: "1:736317746971:web:2482decc19d14cbe6dedbe",
-  measurementId: "G-Y1JLQF5M0M"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-const db = getFirestore(app);
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  const db = getFirestore(app);
 
   const staffsCol = collection(db, "staffs");
   const getStaffs = async () => {
-  const staffSnapshot = await getDocs(staffsCol);
-  const staffList = staffSnapshot.docs.map(doc => doc.data());
-  const staffListOrderBy = staffList.sort((a, b) => (a.id < b.id) ? 1 : -1)
+    const staffSnapshot = await getDocs(staffsCol);
+    const staffList = staffSnapshot.docs.map((doc) => doc.data());
+    const staffListOrderBy = staffList.sort((a, b) => (a.id < b.id ? 1 : -1));
     //console.log(staffListOrderBy[0].id)
-    setMaxId(staffListOrderBy[0].id + 1)
-  return staffListOrderBy;
-  }
- 
+    setMaxId(staffListOrderBy[0].id + 1);
+    return staffListOrderBy;
+  };
+
   if (staffs.length === 0) {
     getStaffs().then((data) => {
       setStaffs(data);
-    })
-  }
-
-  const createStaffs = async (db, value) => {
-    await setDoc(doc(db, 'staffs', toString(maxId)), {
-    id: maxId,
-    name: value.name,
-    classification: value.classification.label,
-    role: value.role.label,
-    organization: value.organization.label,
-    mail: value.mail,
-    phone: value.phone,
     });
   }
 
-  const handleSubmit = async (values: State) => { 
-    console.log("on Click!!!")
-    console.log(values)
-    createStaffs(db, values)
+  const createStaffs = async (db, value) => {
+    await setDoc(doc(db, "staffs", toString(maxId)), {
+      id: maxId,
+      name: value.name,
+      classification: value.classification.label,
+      role: value.role.label,
+      organization: value.organization.label,
+      mail: value.mail,
+      phone: value.phone,
+    });
+  };
+
+  const handleSubmit = async (values: State) => {
+    console.log("on Click!!!");
+    console.log(values);
+    createStaffs(db, values);
     setModal(false);
-  }
+    await getStaffs().then((data) => {
+      setStaffs(data);
+    });
+  };
 
-
-  
   return (
     <ThemeProvider theme={mdTheme}>
-      <Modal onSubmit={handleSubmit}/>
-      <Box sx={{ display: 'flex' }}>
+      <Modal onSubmit={handleSubmit} />
+      <Box sx={{ display: "flex" }}>
         <CssBaseline />
         <AppBar position="absolute" open={open}>
           <Toolbar
             sx={{
-              pr: '24px', // keep right padding when drawer closed
+              pr: "24px", // keep right padding when drawer closed
             }}
           >
             <IconButton
@@ -173,8 +180,8 @@ const db = getFirestore(app);
               aria-label="open drawer"
               onClick={toggleDrawer}
               sx={{
-                marginRight: '36px',
-                ...(open && { display: 'none' }),
+                marginRight: "36px",
+                ...(open && { display: "none" }),
               }}
             >
               <MenuIcon />
@@ -198,9 +205,9 @@ const db = getFirestore(app);
         <Drawer variant="permanent" open={open}>
           <Toolbar
             sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'flex-end',
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "flex-end",
               px: [1],
             }}
           >
@@ -218,12 +225,12 @@ const db = getFirestore(app);
           component="main"
           sx={{
             backgroundColor: (theme) =>
-              theme.palette.mode === 'light'
+              theme.palette.mode === "light"
                 ? theme.palette.grey[100]
                 : theme.palette.grey[900],
             flexGrow: 1,
-            height: '100vh',
-            overflow: 'auto',
+            height: "100vh",
+            overflow: "auto",
           }}
         >
           <Toolbar />
@@ -257,7 +264,7 @@ const db = getFirestore(app);
               </Grid> */}
               {/* Recent Orders */}
               <Grid item xs={12}>
-                <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
+                <Paper sx={{ p: 2, display: "flex", flexDirection: "column" }}>
                   <Orders />
                 </Paper>
               </Grid>
