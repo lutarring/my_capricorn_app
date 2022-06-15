@@ -21,12 +21,13 @@ import ListItems from './ListItems';
 import Chart from './Chart';
 import Deposits from './Deposits';
 import Orders from './Orders';
-import Modal from './Modal';
+import Modal, { State } from './Modal';
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore, collection, getDocs } from 'firebase/firestore/lite';
 import StaffsContext from './StaffsContext';
-
+import { doc, setDoc } from 'firebase/firestore';
+import { toString } from 'lodash';
 
 function Copyright(props: any) {
   return (
@@ -99,7 +100,8 @@ function DashboardContent() {
     setOpen(!open);
   };
 
-  const { modal,setModal,staffs,setStaffs } = StaffsContext.useContainer();
+
+  const { modal,setModal,staffs,setStaffs,maxId,setMaxId } = StaffsContext.useContainer();
 
 const firebaseConfig = {
   apiKey: "AIzaSyDVbWOjFGqNiw1ZrwEen2a-fC1AFXbYcfM",
@@ -115,21 +117,15 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
-  const db = getFirestore(app);
-  // Get a list of staffs from database
-// async function getStaffs(db) {
-//   const staffsCol = collection(db, 'staffs');
-//   const staffSnapshot = await getDocs(staffsCol);
-//   const staffList = staffSnapshot.docs.map(doc => doc.data());
-//   console.log(staffList);
-//   return staffList;
-// }
+const db = getFirestore(app);
+
   const staffsCol = collection(db, "staffs");
   const getStaffs = async () => {
   const staffSnapshot = await getDocs(staffsCol);
   const staffList = staffSnapshot.docs.map(doc => doc.data());
-  const staffListOrderBy = staffList.sort((a, b) => (a.id < b.id) ? -1 : 1)
-
+  const staffListOrderBy = staffList.sort((a, b) => (a.id < b.id) ? 1 : -1)
+    //console.log(staffListOrderBy[0].id)
+    setMaxId(staffListOrderBy[0].id + 1)
   return staffListOrderBy;
   }
  
@@ -138,12 +134,31 @@ const analytics = getAnalytics(app);
       setStaffs(data);
     })
   }
-  console.log(staffs);
 
+  const createStaffs = async (db, value) => {
+    await setDoc(doc(db, 'staffs', toString(maxId)), {
+    id: maxId,
+    name: value.name,
+    classification: value.classification.label,
+    role: value.role.label,
+    organization: value.organization.label,
+    mail: value.mail,
+    phone: value.phone,
+    });
+  }
+
+  const handleSubmit = async (values: State) => { 
+    console.log("on Click!!!")
+    console.log(values)
+    createStaffs(db, values)
+    setModal(false);
+  }
+
+
+  
   return (
     <ThemeProvider theme={mdTheme}>
-      <Modal />
-      
+      <Modal onSubmit={handleSubmit}/>
       <Box sx={{ display: 'flex' }}>
         <CssBaseline />
         <AppBar position="absolute" open={open}>
@@ -171,7 +186,7 @@ const analytics = getAnalytics(app);
               noWrap
               sx={{ flexGrow: 1 }}
             >
-              Dashboard
+              社員・協働者
             </Typography>
             <IconButton color="inherit">
               <Badge badgeContent={4} color="secondary">

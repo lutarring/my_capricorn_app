@@ -39,11 +39,10 @@ function preventDefault(event: React.MouseEvent) {
 
 const Orders = () => {
   const { staffs, setStaffs } = StaffsContext.useContainer();
-  console.log(staffs);
   
   return (
     <React.Fragment>
-      <Title>Recent Orders</Title>
+      <Title>社員一覧</Title>
       <Table size="small">
         <TableHead>
           <TableRow>

@@ -5,8 +5,8 @@ import { createContainer } from 'unstated-next';
 // main func
 const useStaffsContainer = () => { 
     const [staffs, setStaffs] = useState([]);
-    const [modal, setModal] =useState(false);
-
+    const [modal, setModal] = useState(false);
+    const [maxId, setMaxId] = useState(0);
 
 
     // return
@@ -15,6 +15,8 @@ const useStaffsContainer = () => {
         setModal,
         staffs,
         setStaffs,
+        maxId,
+        setMaxId
     }
 }
 

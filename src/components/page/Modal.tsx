@@ -4,7 +4,11 @@ import SaveIcon from '@mui/icons-material/Save';
 import StaffsContext from "./StaffsContext";
 import { ChangeEvent, FC, useState } from "react";
 import React from "react";
-import { useForm } from 'react-hook-form';
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+import { getFirestore, setDoc, doc } from 'firebase/firestore';
+import { toString } from 'lodash';
+import useForm from "../common/useForm";
 
 
 // type defined for Autocomplete options data
@@ -21,71 +25,94 @@ export interface State {
   phone: string;
 }
 
-
-export type StaffModalProps = {
-  id: number;
-  name: string;
-  classification: Option[];
-  role: Option[];
-  organization: Option[];
-  mail: string;
-  phone: string;
-  initialState?: State;
-  disables?: Array<String>;
-  onSubmit(values: State): Promise<any>;
-  onCancel(): any;
-  maps?: State;
+const firebaseConfig = {
+  apiKey: "AIzaSyDVbWOjFGqNiw1ZrwEen2a-fC1AFXbYcfM",
+  authDomain: "my-capricorn-app.firebaseapp.com",
+  databaseURL: "https://my-capricorn-app-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "my-capricorn-app",
+  storageBucket: "my-capricorn-app.appspot.com",
+  messagingSenderId: "736317746971",
+  appId: "1:736317746971:web:2482decc19d14cbe6dedbe",
+  measurementId: "G-Y1JLQF5M0M"
 };
 
-export const INITIAL_STATE: State = {
-  name: '',
-  classification: null,
-  role: null,
-  organization: null,
-  mail: '',
-  phone: '',
-}
+export type MadalProps = {
+  onSubmit(values: State): Promise<any>;
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const db = getFirestore(app);
 
 
-const Modal: FC<StaffModalProps> = (
-  onSubmit,
-  onCancel,
-  initialState = INITIAL_STATE,
-) => {
-  const [values, setValues] = React.useState<State>({
-    name: '',
-    classification: null,
-    role: null,
-    organization: null,
-    mail: '',
-    phone: '',
-  });
+const Modal: FC<MadalProps> = ({ onSubmit }) => {
+  // const [values, setValues] = React.useState<State>({
+  //   name: '',
+  //   classification: null,
+  //   role: null,
+  //   organization: null,
+  //   mail: '',
+  //   phone: '',
+  // });
 
-  const { modal,setModal } = StaffsContext.useContainer();
-  const queryStr = "query MyQuery { users { id email } }"
-  const query = { query: queryStr }
-  const { handleSubmit } = useForm();
-
-  const handleInputChange = (name: keyof State) => (
-    event: React.ChangeEvent<HTMLTextAreaElement>
-  ) => {
-    const newValues = { ...values, [name]: event.target.value };
-    setValues(newValues);
-  };
-
-  const handleAutocompleteChange = (name: keyof State) => (
-    event: object, value: any,
-  ) => {
-    const newValues = { ...values, [name]: value };
-    setValues(newValues);
-  };
+  const { modal, setModal, maxId } = StaffsContext.useContainer();
   
-  const handleClickSubmit = () => {
-    console.log(values);
-  }
+  const { handleChange, handleSubmit, values } = useForm<State>({});
+
+  // const handleInputChange = (name: keyof State) => (
+  //   event: React.ChangeEvent<HTMLTextAreaElement>
+  // ) => {
+  //   const newValues = { ...values, [name]: event.target.value };
+  //   setValues(newValues);
+  // };
+
+  // const handleAutocompleteChange = (name: keyof State) => (
+  //   event: object, value: any,
+  // ) => {
+  //   const newValues = { ...values, [name]: value };
+  //   setValues(newValues);
+  // };
+
+  type StateKey = keyof State;
+
+  const handleInputChange =
+    (name: StateKey) => (event: ChangeEvent<HTMLInputElement>) => {
+      const value = event.target.value;
+      handleChange(name, value);
+    };
+
+  const handleAutocompleteChange =
+    (name: StateKey) => (event: object, value: any, reason: string) => {
+      handleChange(name, value);
+    };
+  
+  // const handleClickSubmit = async () => {
+  //   console.log(values)
+  //   createStaffs(db, values)
+  //   setModal(false);
+  //   // window.location.reload()
+  //     //const onSubmit = (data: State): void => console.log('data',data);
+  // }
+
+  const handleClickSubmit = async () => {
+    handleSubmit(onSubmit);
+  };
 
   const handleClickCancel = () => {
     setModal(false);
+  }
+
+  const createStaffs = async (db, value) => {
+    await setDoc(doc(db, 'staffs', toString(maxId)), {
+    id: maxId,
+    name: value.name,
+    classification: value.classification.label,
+    role: value.role.label,
+    organization: value.organization.label,
+    mail: value.mail,
+    phone: value.phone,
+    });
   }
 
   const classificationOptions:Option[] = [
@@ -106,13 +133,14 @@ const Modal: FC<StaffModalProps> = (
   { label: '事業推進担当' },
   ]
 
+
     return (
-    <Dialog open={modal}>
+      <Dialog open={modal} >
       <DialogTitle>新規登録</DialogTitle>
-      <DialogContent>
+        <DialogContent>
+         
         <TextField
           label="名前"
-          required
           variant="outlined"
           fullWidth
           margin="normal"
@@ -133,7 +161,6 @@ const Modal: FC<StaffModalProps> = (
                 {...params}
                 label="要員区分"
                 variant="outlined"
-                required
               />
             )}
           />
@@ -152,7 +179,6 @@ const Modal: FC<StaffModalProps> = (
                 {...params}
                 label="ロール"
                 variant="outlined"
-                required
               />
             )}
           />
@@ -171,14 +197,12 @@ const Modal: FC<StaffModalProps> = (
                 {...params}
                 label="組織"
                 variant="outlined"
-                required
               />
             )}
           />
         </FormControl>
         <TextField
           label="メールアドレス"
-          required
           variant="outlined"
           fullWidth
           margin="normal"
@@ -188,7 +212,6 @@ const Modal: FC<StaffModalProps> = (
         />
          <TextField
           label="電話番号"
-          required
           variant="outlined"
           fullWidth
           margin="normal"
@@ -202,7 +225,7 @@ const Modal: FC<StaffModalProps> = (
           variant="outlined"
           color="primary"
           style={{ fontWeight: 'bold' }}
-        onClick={() => handleClickCancel()}
+          onClick={() => handleClickCancel()}
           startIcon={<HighlightOffIcon />}
         >
           キャンセル
@@ -210,13 +233,14 @@ const Modal: FC<StaffModalProps> = (
         <Button
           variant="contained"
           color="primary"
-        //   disabled={!changed || error}
+        // disabled={!changed || error}
           onClick={() => handleClickSubmit()}
           startIcon={<SaveIcon />}
+          type="submit"  
         >
           保存
         </Button>
-      </DialogActions>
+          </DialogActions>
     </Dialog>
   );
 
