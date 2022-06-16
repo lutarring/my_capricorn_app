@@ -4,10 +4,6 @@ import SaveIcon from '@mui/icons-material/Save';
 import StaffsContext from "./StaffsContext";
 import { ChangeEvent, FC, useState } from "react";
 import React from "react";
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import { getFirestore, setDoc, doc } from 'firebase/firestore';
-import { toString } from 'lodash';
 import useForm, { Validations } from "../common/useForm";
 
 // type defined for Autocomplete options data
@@ -23,17 +19,6 @@ export interface State {
   mail: string;
   phone: string;
 }
-
-// const firebaseConfig = {
-//   apiKey: "AIzaSyDVbWOjFGqNiw1ZrwEen2a-fC1AFXbYcfM",
-//   authDomain: "my-capricorn-app.firebaseapp.com",
-//   databaseURL: "https://my-capricorn-app-default-rtdb.asia-southeast1.firebasedatabase.app",
-//   projectId: "my-capricorn-app",
-//   storageBucket: "my-capricorn-app.appspot.com",
-//   messagingSenderId: "736317746971",
-//   appId: "1:736317746971:web:2482decc19d14cbe6dedbe",
-//   measurementId: "G-Y1JLQF5M0M"
-// };
 
 export type MadalProps = {
   onSubmit(values: State): Promise<any>;
@@ -55,40 +40,13 @@ const validations: Validations<State> = {
   },
 };
 
-// // Initialize Firebase
-// const app = initializeApp(firebaseConfig);
-// const analytics = getAnalytics(app);
-// const db = getFirestore(app);
-
 const Modal: FC<MadalProps> = ({ onSubmit }) => {
-  // const [values, setValues] = React.useState<State>({
-  //   name: '',
-  //   classification: null,
-  //   role: null,
-  //   organization: null,
-  //   mail: '',
-  //   phone: '',
-  // });
 
   const { modal, setModal } = StaffsContext.useContainer();
 
   const { handleChange, handleSubmit, reset, values, errors } = useForm<State>({
     validations,
   });
-
-  // const handleInputChange = (name: keyof State) => (
-  //   event: React.ChangeEvent<HTMLTextAreaElement>
-  // ) => {
-  //   const newValues = { ...values, [name]: event.target.value };
-  //   setValues(newValues);
-  // };
-
-  // const handleAutocompleteChange = (name: keyof State) => (
-  //   event: object, value: any,
-  // ) => {
-  //   const newValues = { ...values, [name]: value };
-  //   setValues(newValues);
-  // };
 
   type StateKey = keyof State;
 
@@ -103,14 +61,6 @@ const Modal: FC<MadalProps> = ({ onSubmit }) => {
       handleChange(name, value);
     };
 
-  // const handleClickSubmit = async () => {
-  //   console.log(values)
-  //   createStaffs(db, values)
-  //   setModal(false);
-  //   // window.location.reload()
-  //     //const onSubmit = (data: State): void => console.log('data',data);
-  // }
-
   const handleClickSubmit = async () => {
     handleSubmit(onSubmit);
     reset();
@@ -122,17 +72,6 @@ const Modal: FC<MadalProps> = ({ onSubmit }) => {
   };
 
   const error = Object.values(errors).some((error) => !!error);
-  // const createStaffs = async (db, value) => {
-  //   await setDoc(doc(db, "staffs", toString(maxId)), {
-  //     id: maxId,
-  //     name: value.name,
-  //     classification: value.classification.label,
-  //     role: value.role.label,
-  //     organization: value.organization.label,
-  //     mail: value.mail,
-  //     phone: value.phone,
-  //   });
-  // };
 
   const classificationOptions: Option[] = [
     { label: "プロパー" },

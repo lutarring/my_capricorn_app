@@ -7,23 +7,6 @@ import TableRow from '@mui/material/TableRow';
 import Title from './Title';
 import StaffsContext from './StaffsContext';
 
-// Generate Order Data
-function createData(
-  id: number,
-  name: string,
-  classification: string,
-  role: string,
-  organization: string,
-  mail: string,
-  phone: string,
-) {
-  return { id, name, classification, role, organization,mail, phone};
-}
-
-// function preventDefault(event: React.MouseEvent) {
-//   event.preventDefault();
-// }
-
 const Orders = () => {
   const { staffs } = StaffsContext.useContainer();
   
