@@ -1,27 +1,28 @@
 import * as React from 'react';
-import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import Title from './Title';
+import moment from "moment";
+
 
 function preventDefault(event: React.MouseEvent) {
   event.preventDefault();
 }
 
 export default function Deposits() {
+  const today = moment().format("ll"); 
   return (
     <React.Fragment>
-      <Title>Recent Deposits</Title>
+      <Title>出社勤務者数</Title>
       <Typography component="p" variant="h4">
-        $3,024.00
+        27人
+      </Typography>
+      <Title>在宅勤務者数</Title>
+      <Typography component="p" variant="h4">
+        82人
       </Typography>
       <Typography color="text.secondary" sx={{ flex: 1 }}>
-        on 15 March, 2019
+        on {today}
       </Typography>
-      <div>
-        <Link color="primary" href="#" onClick={preventDefault}>
-          View balance
-        </Link>
-      </div>
     </React.Fragment>
   );
 }

@@ -7,9 +7,10 @@ import TableRow from '@mui/material/TableRow';
 import Title from './Title';
 import StaffsContext from './StaffsContext';
 
-const Orders = () => {
-  const { staffs } = StaffsContext.useContainer();
-  
+const Staffs = () => {
+  const { staffs } =
+    StaffsContext.useContainer();
+
   return (
     <React.Fragment>
       <Title>社員一覧</Title>
@@ -37,11 +38,8 @@ const Orders = () => {
           ))}
         </TableBody>
       </Table>
-      {/* <Link color="primary" href="#" onClick={preventDefault} sx={{ mt: 3 }}>
-        See more orders
-      </Link> */}
     </React.Fragment>
   );
 }
 
-export default Orders;
+export default Staffs;

@@ -9,15 +9,16 @@ function createData(time: string, amount?: number) {
 }
 
 const data = [
-  createData('00:00', 0),
-  createData('03:00', 300),
-  createData('06:00', 600),
-  createData('09:00', 800),
-  createData('12:00', 1500),
-  createData('15:00', 2000),
-  createData('18:00', 2400),
-  createData('21:00', 2400),
-  createData('24:00', undefined),
+  createData("06:00", undefined),
+  createData("08:00", 13),
+  createData("10:00", 82),
+  createData("12:00", 105),
+  createData("14:00", 105),
+  createData("16:00", 97),
+  createData("18:00", 19),
+  createData("20:00", 7),
+  createData("22:00", 2),
+  createData("24:00", undefined),
 ];
 
 export default function Chart() {
@@ -25,7 +26,7 @@ export default function Chart() {
 
   return (
     <React.Fragment>
-      <Title>Today</Title>
+      <Title>時間帯別出勤人数</Title>
       <ResponsiveContainer>
         <LineChart
           data={data}
@@ -49,20 +50,20 @@ export default function Chart() {
               angle={270}
               position="left"
               style={{
-                textAnchor: 'middle',
+                textAnchor: "middle",
                 fill: theme.palette.text.primary,
                 ...theme.typography.body1,
               }}
             >
-              Sales ($)
+              人員数
             </Label>
           </YAxis>
           <Line
-            isAnimationActive={false}
+            isAnimationActive={true}
             type="monotone"
             dataKey="amount"
             stroke={theme.palette.primary.main}
-            dot={false}
+            dot={true}
           />
         </LineChart>
       </ResponsiveContainer>
