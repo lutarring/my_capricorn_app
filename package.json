@@ -20,6 +20,7 @@
     "react": "^18.1.0",
     "react-csv-downloader": "^2.8.0",
     "react-dom": "^18.1.0",
+    "react-file-reader": "^1.1.4",
     "react-hook-form": "^7.32.1",
     "react-hooks-useform": "^0.1.86",
     "react-scripts": "5.0.1",

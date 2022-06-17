@@ -21,13 +21,14 @@ import ListItems from './ListItems';
 import Chart from './Chart';
 import Deposits from './Deposits';
 import Staffs from "./StaffsTable";
-import Modal, { State } from './Modal';
+import CreateModal, { State } from "./CreateModal";
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getFirestore, collection, getDocs } from 'firebase/firestore/lite';
-import StaffsContext from './StaffsContext';
-import { doc, setDoc } from 'firebase/firestore';
-import { toString } from 'lodash';
+import { getFirestore, collection, getDocs } from "firebase/firestore/lite";
+import StaffsContext from "./StaffsContext";
+import { doc, setDoc } from "firebase/firestore";
+import { toString } from "lodash";
+import CsvImportModal from './CsvImportModal';
 
 function Copyright(props: any) {
   return (
@@ -105,7 +106,7 @@ function DashboardContent() {
     setOpen(!open);
   };
 
-  const { setModal, staffs, setStaffs, maxId, setMaxId } =
+  const { setCreateModal, staffs, setStaffs, maxId, setMaxId } =
     StaffsContext.useContainer();
 
   const firebaseConfig = {
@@ -157,7 +158,7 @@ function DashboardContent() {
     console.log("on Click!!!");
     console.log(values);
     createStaffs(db, values);
-    setModal(false);
+    setCreateModal(false);
     await getStaffs().then((data) => {
       setStaffs(data);
     });
@@ -165,7 +166,8 @@ function DashboardContent() {
 
   return (
     <ThemeProvider theme={mdTheme}>
-      <Modal onSubmit={handleSubmit} />
+      <CreateModal onSubmit={handleSubmit} />
+      <CsvImportModal />
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
         <AppBar position="absolute" open={open}>

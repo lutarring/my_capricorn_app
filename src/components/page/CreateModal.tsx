@@ -40,9 +40,8 @@ const validations: Validations<State> = {
   },
 };
 
-const Modal: FC<MadalProps> = ({ onSubmit }) => {
-
-  const { modal, setModal } = StaffsContext.useContainer();
+const CreateModal: FC<MadalProps> = ({ onSubmit }) => {
+  const { createModal, setCreateModal } = StaffsContext.useContainer();
 
   const { handleChange, handleSubmit, reset, values, errors } = useForm<State>({
     validations,
@@ -68,7 +67,7 @@ const Modal: FC<MadalProps> = ({ onSubmit }) => {
 
   const handleClickCancel = () => {
     reset();
-    setModal(false);
+    setCreateModal(false);
   };
 
   const error = Object.values(errors).some((error) => !!error);
@@ -95,7 +94,7 @@ const Modal: FC<MadalProps> = ({ onSubmit }) => {
   ];
 
   return (
-    <Dialog open={modal}>
+    <Dialog open={createModal}>
       <DialogTitle>新規登録</DialogTitle>
       <DialogContent>
         <TextField
@@ -216,4 +215,4 @@ const Modal: FC<MadalProps> = ({ onSubmit }) => {
   );
 };
 
-export default Modal
+export default CreateModal;

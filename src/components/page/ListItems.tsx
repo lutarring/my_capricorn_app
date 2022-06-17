@@ -11,9 +11,13 @@ import CsvDownloader from "react-csv-downloader";
 import moment from "moment";
 
 const ListItems = () => {
-  const { modal, setModal, staffs, setStaffs } = StaffsContext.useContainer();
-  const handleModal = () => {
-    setModal(true);
+  const { setCreateModal, setCsvImportModal,staffs, setStaffs } =
+    StaffsContext.useContainer();
+  const handleCreateModal = () => {
+    setCreateModal(true);
+  };
+  const handleCsvModal = () => {
+    setCsvImportModal(true);
   };
 
   const handleClickSectionCsvDown = async () => {
@@ -48,7 +52,7 @@ const ListItems = () => {
 
   return (
     <React.Fragment>
-      <ListItemButton onClick={handleModal}>
+      <ListItemButton onClick={handleCreateModal}>
         <ListItemIcon>
           <AddCircleOutlineIcon />
         </ListItemIcon>
@@ -60,7 +64,7 @@ const ListItems = () => {
         </ListItemIcon>
         <ListItemText primary="メンバー一覧" />
       </ListItemButton> */}
-      <ListItemButton>
+      <ListItemButton onClick={handleCsvModal}>
         <ListItemIcon>
           <CloudUploadIcon />
         </ListItemIcon>
