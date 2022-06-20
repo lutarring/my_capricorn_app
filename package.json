@@ -13,6 +13,7 @@
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.3.0",
     "@testing-library/user-event": "^13.5.0",
+    "csvtojson": "^2.0.10",
     "firebase": "^9.8.3",
     "lodash": "^4.17.21",
     "moment": "^2.29.3",

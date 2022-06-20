@@ -2,7 +2,7 @@ import { Autocomplete, Button, Dialog, DialogActions, DialogContent, DialogTitle
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import SaveIcon from '@mui/icons-material/Save';
 import StaffsContext from "./StaffsContext";
-import { ChangeEvent, FC, useState } from "react";
+import { ChangeEvent, FC } from "react";
 import React from "react";
 import useForm, { Validations } from "../common/useForm";
 
@@ -36,6 +36,12 @@ const validations: Validations<State> = {
     required: true,
   },
   organization: {
+    required: true,
+  },
+  mail: {
+    required: true,
+  },
+  phone: {
     required: true,
   },
 };
@@ -175,19 +181,25 @@ const CreateModal: FC<MadalProps> = ({ onSubmit }) => {
           label="メールアドレス"
           variant="outlined"
           fullWidth
+          required
           margin="normal"
           inputProps={{ maxLength: 30 }}
           value={values.mail}
           onChange={handleInputChange("mail")}
+          error={!!errors.mail}
+          helperText={errors.mail}
         />
         <TextField
           label="電話番号"
           variant="outlined"
           fullWidth
+          required
           margin="normal"
           inputProps={{ maxLength: 30 }}
           value={values.phone}
           onChange={handleInputChange("phone")}
+          error={!!errors.phone}
+          helperText={errors.phone}
         />
       </DialogContent>
       <DialogActions>

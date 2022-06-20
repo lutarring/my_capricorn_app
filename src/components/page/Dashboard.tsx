@@ -29,6 +29,7 @@ import StaffsContext from "./StaffsContext";
 import { doc, setDoc } from "firebase/firestore";
 import { toString } from "lodash";
 import CsvImportModal from './CsvImportModal';
+import { query, orderBy } from "firebase/firestore";
 
 function Copyright(props: any) {
   return (
@@ -106,35 +107,15 @@ function DashboardContent() {
     setOpen(!open);
   };
 
-  const { setCreateModal, staffs, setStaffs, maxId, setMaxId } =
-    StaffsContext.useContainer();
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyDVbWOjFGqNiw1ZrwEen2a-fC1AFXbYcfM",
-    authDomain: "my-capricorn-app.firebaseapp.com",
-    databaseURL:
-      "https://my-capricorn-app-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "my-capricorn-app",
-    storageBucket: "my-capricorn-app.appspot.com",
-    messagingSenderId: "736317746971",
-    appId: "1:736317746971:web:2482decc19d14cbe6dedbe",
-    measurementId: "G-Y1JLQF5M0M",
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-  const db = getFirestore(app);
-
-  const staffsCol = collection(db, "staffs");
-  const getStaffs = async () => {
-    const staffSnapshot = await getDocs(staffsCol);
-    const staffList = staffSnapshot.docs.map((doc) => doc.data());
-    const staffListOrderBy = staffList.sort((a, b) => (a.id < b.id ? 1 : -1));
-    //console.log(staffListOrderBy[0].id)
-    setMaxId(staffListOrderBy[0].id + 1);
-    return staffListOrderBy;
-  };
+  const {
+    setCreateModal,
+    staffs,
+    setStaffs,
+    maxId,
+    getStaffs,
+    createStaff,
+    db,
+  } = StaffsContext.useContainer();
 
   if (staffs.length === 0) {
     getStaffs().then((data) => {
@@ -142,22 +123,10 @@ function DashboardContent() {
     });
   }
 
-  const createStaffs = async (db, value) => {
-    await setDoc(doc(db, "staffs", toString(maxId)), {
-      id: maxId,
-      name: value.name,
-      classification: value.classification.label,
-      role: value.role.label,
-      organization: value.organization.label,
-      mail: value.mail,
-      phone: value.phone,
-    });
-  };
-
   const handleSubmit = async (values: State) => {
     console.log("on Click!!!");
     console.log(values);
-    createStaffs(db, values);
+    createStaff(db, values, maxId + 1);
     setCreateModal(false);
     await getStaffs().then((data) => {
       setStaffs(data);

@@ -1,5 +1,4 @@
 import {
-  Autocomplete,
   Button,
   Dialog,
   DialogActions,
@@ -9,10 +8,6 @@ import {
   IconButton,
   Input,
   InputAdornment,
-  makeStyles,
-  TextField,
-  Theme,
-  createStyles,
 } from "@mui/material";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import SaveIcon from "@mui/icons-material/Save";
@@ -21,21 +16,38 @@ import { FC, useState } from "react";
 import React from "react";
 import { CancelRounded, Download } from "@mui/icons-material";
 import ReactFileReader from "react-file-reader";
+import sample from "../../assets/staffs_list_sample.csv";
 
 const CsvImportModal: FC = () => {
-  const { csvImportModal, setCsvImportModal } = StaffsContext.useContainer();
+  const {
+    csvImportModal,
+    setCsvImportModal,
+    csvFile,
+    setCsvFile,
+    db,
+    createStaffs,
+    getStaffs,
+    setStaffs,
+  } = StaffsContext.useContainer();
   const [csvFileName, setCsvFileName] = useState("");
   // const classes = useStyles();
   const handleFiles = (files): void => {
     setCsvFileName(files[0].name);
+    setCsvFile(files[0]);
+    console.log(csvFile);
   };
   const handleClickSubmit = async () => {
+    staffsCSVImport();
     setCsvFileName("");
+    await getStaffs().then((data) => {
+      setStaffs(data);
+    });
     setCsvImportModal(false);
   };
 
   const handleClickCancel = () => {
     setCsvFileName("");
+    setCsvFile(undefined);
     setCsvImportModal(false);
   };
 
@@ -53,46 +65,67 @@ const CsvImportModal: FC = () => {
     // }
   };
 
+  // CSVファイルの内容を読み取り、JSONに変換する
+  const getCSVData = () => {
+    return new Promise((resolve, reject) => {
+      try {
+        let file: File;
+        if (csvFile !== undefined) {
+          file = csvFile;
+
+          const reader = new FileReader();
+          reader.readAsText(file, "UTF-8");
+          const csv = require("csvtojson");
+          reader.onload = (e) => {
+            const jsonArray = csv({
+              noheader: true, // CSVのタイトル行あり・なし設定
+              output: "csv",
+            }).fromString(e.target?.result);
+            return resolve(jsonArray);
+          };
+        }
+      } catch (error) {
+        return resolve([]);
+      }
+    });
+  };
+
   const staffsCSVImport = async () => {
     try {
       // setLoading(true);
       let csvData;
-      let csvImportResult = false;
+      // let csvImportResult = false;
 
       // 取引先マスタファイル読み込む
-      if (csvFileName) {
-        csvData = await getCSVData(CSV_TYPE.CLIENT_MASTER);
-        if (!fileFormatCheck(CSV_TYPE.CLIENT_MASTER, csvData)) {
-          return;
-        }
+      if (csvFile) {
+        csvData = await getCSVData();
+        // if (!fileFormatCheck(csvData)) {
+        //   return;
+        // }
       }
 
       // 取引先マスタファイルインポート
       if (csvData) {
-        const success = await csvImportClientMaster(csvData);
-        if (success) {
-          csvImportResult = true;
-        }
-      }
-
-      if (
-        !csvData ||
-        (csvData && csvImportResult)
-      ) {
-        enqueueSnackbar("CSVファイルのデータをインポートしました。", {
-          variant: "success",
+        console.log(csvData);
+        csvData.shift();
+        console.log(csvData);
+        csvData.map((data) => {
+          const values = {
+            id: data[0],
+            name: data[1],
+            classification: data[2],
+            role: data[3],
+            organization: data[4],
+            mail: data[5],
+            phone: data[6],
+          };
+          console.log(values.id);
+          createStaffs(db, values, values.id);
         });
       }
     } catch (e) {
-      if (isApolloError(e)) {
-        const { graphQLErrors, message } = e;
-        console.log(message);
-        enqueueSnackbar("予期せぬエラーによりインポートに失敗しました", {
-          variant: "error",
-        });
-      }
+      console.log("Error getting cached document:", e);
     } finally {
-      setLoading(false);
     }
   };
 
@@ -106,6 +139,7 @@ const CsvImportModal: FC = () => {
             variant="outlined"
             color="primary"
             endIcon={<Download />}
+            href={sample}
           >
             サンプルデータダウンロード
           </Button>
@@ -166,6 +200,7 @@ const CsvImportModal: FC = () => {
           onClick={() => handleClickSubmit()}
           startIcon={<SaveIcon />}
           type="submit"
+          disabled={!csvFile}
         >
           インポート実行
         </Button>
