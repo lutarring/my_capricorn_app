@@ -17,6 +17,9 @@ import React from "react";
 import { CancelRounded, Download } from "@mui/icons-material";
 import ReactFileReader from "react-file-reader";
 import sample from "../../assets/staffs_list_sample.csv";
+import { useSnackbar } from "notistack";
+import { toNumber } from "lodash";
+
 
 const CsvImportModal: FC = () => {
   const {
@@ -34,7 +37,6 @@ const CsvImportModal: FC = () => {
   const handleFiles = (files): void => {
     setCsvFileName(files[0].name);
     setCsvFile(files[0]);
-    console.log(csvFile);
   };
   const handleClickSubmit = async () => {
     staffsCSVImport();
@@ -90,25 +92,19 @@ const CsvImportModal: FC = () => {
     });
   };
 
+  const { enqueueSnackbar } = useSnackbar();
+
   const staffsCSVImport = async () => {
     try {
-      // setLoading(true);
       let csvData;
-      // let csvImportResult = false;
-
-      // 取引先マスタファイル読み込む
+      // ファイル読み込む
       if (csvFile) {
         csvData = await getCSVData();
-        // if (!fileFormatCheck(csvData)) {
-        //   return;
-        // }
       }
 
-      // 取引先マスタファイルインポート
+      // ファイルインポート
       if (csvData) {
-        console.log(csvData);
         csvData.shift();
-        console.log(csvData);
         csvData.map((data) => {
           const values = {
             id: data[0],
@@ -119,8 +115,10 @@ const CsvImportModal: FC = () => {
             mail: data[5],
             phone: data[6],
           };
-          console.log(values.id);
           createStaffs(db, values, values.id);
+        });
+        enqueueSnackbar("CSVファイルを登録しました。", {
+          variant: "success",
         });
       }
     } catch (e) {

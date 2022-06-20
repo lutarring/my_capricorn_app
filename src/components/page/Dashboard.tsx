@@ -22,14 +22,10 @@ import Chart from './Chart';
 import Deposits from './Deposits';
 import Staffs from "./StaffsTable";
 import CreateModal, { State } from "./CreateModal";
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import { getFirestore, collection, getDocs } from "firebase/firestore/lite";
 import StaffsContext from "./StaffsContext";
-import { doc, setDoc } from "firebase/firestore";
-import { toString } from "lodash";
-import CsvImportModal from './CsvImportModal';
-import { query, orderBy } from "firebase/firestore";
+import CsvImportModal from "./CsvImportModal";
+import { useSnackbar } from "notistack";
+import { toString, toNumber } from "lodash";
 
 function Copyright(props: any) {
   return (
@@ -123,13 +119,16 @@ function DashboardContent() {
     });
   }
 
+  const { enqueueSnackbar } = useSnackbar();
+
   const handleSubmit = async (values: State) => {
-    console.log("on Click!!!");
-    console.log(values);
     createStaff(db, values, maxId + 1);
     setCreateModal(false);
     await getStaffs().then((data) => {
       setStaffs(data);
+    });
+    enqueueSnackbar("スタッフデータを登録しました。", {
+      variant: "success",
     });
   };
 

@@ -5,7 +5,7 @@ import { getAnalytics } from "firebase/analytics";
 import { getFirestore, collection, getDocs } from "firebase/firestore/lite";
 import { query, orderBy } from "firebase/firestore";
 import { doc, setDoc } from "firebase/firestore";
-import { toString } from "lodash";
+import { toString, toNumber } from "lodash";
 
 // main func
 const useStaffsContainer = () => {
@@ -42,14 +42,13 @@ const useStaffsContainer = () => {
     const first = query(staffsCol, orderBy("id", "desc"));
     const staffSnapshot = await getDocs(first);
     const staffList = staffSnapshot.docs.map((doc) => doc.data());
-    setMaxId(staffList[0].id);
+    setMaxId(toNumber(staffList[0].id));
     return staffList;
   };
 
   const createStaff = async (db, value, id) => {
-    console.log("create!");
     await setDoc(doc(db, "staffs", toString(id)), {
-      id: id,
+      id: toString(id),
       name: value.name,
       classification: value.classification.label,
       role: value.role.label,
@@ -57,9 +56,6 @@ const useStaffsContainer = () => {
       mail: value.mail,
       phone: value.phone,
     });
-    console.log(maxId);
-    setMaxId(maxId + 1);
-    console.log(maxId);
   };
 
   const createStaffs = async (db, value, id) => {

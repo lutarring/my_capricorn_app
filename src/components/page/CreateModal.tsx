@@ -2,9 +2,10 @@ import { Autocomplete, Button, Dialog, DialogActions, DialogContent, DialogTitle
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import SaveIcon from '@mui/icons-material/Save';
 import StaffsContext from "./StaffsContext";
-import { ChangeEvent, FC } from "react";
+import { ChangeEvent, FC, useEffect } from "react";
 import React from "react";
 import useForm, { Validations } from "../common/useForm";
+import { useSnackbar } from "notistack";
 
 // type defined for Autocomplete options data
 export type Option = {
@@ -22,6 +23,22 @@ export interface State {
 
 export type MadalProps = {
   onSubmit(values: State): Promise<any>;
+  initialState?: State;
+};
+
+const INITIAL_STATE: State = {
+  name: "",
+  classification: {
+    label: "--選択してください--",
+  },
+  role: {
+    label: "--選択してください--",
+  },
+  organization: {
+    label: "--選択してください--",
+  },
+  mail: "",
+  phone: "",
 };
 
 // Value Validations
@@ -46,13 +63,18 @@ const validations: Validations<State> = {
   },
 };
 
-const CreateModal: FC<MadalProps> = ({ onSubmit }) => {
+const CreateModal: FC<MadalProps> = ({
+  onSubmit,
+  initialState = INITIAL_STATE,
+}) => {
   const { createModal, setCreateModal } = StaffsContext.useContainer();
 
-  const { handleChange, handleSubmit, reset, values, errors } = useForm<State>({
-    validations,
-  });
-
+  const { handleChange, handleSubmit, reset, values, changed, errors } =
+    useForm<State>({
+      initialState,
+      validations,
+    });
+  
   type StateKey = keyof State;
 
   const handleInputChange =
@@ -215,7 +237,7 @@ const CreateModal: FC<MadalProps> = ({ onSubmit }) => {
         <Button
           variant="contained"
           color="primary"
-          // disabled={!changed || error}
+          disabled={!changed || error}
           onClick={() => handleClickSubmit()}
           startIcon={<SaveIcon />}
           type="submit"
