@@ -55,12 +55,6 @@ const validations: Validations<State> = {
   organization: {
     required: true,
   },
-  mail: {
-    required: true,
-  },
-  phone: {
-    required: true,
-  },
 };
 
 const CreateModal: FC<MadalProps> = ({

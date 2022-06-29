@@ -25,7 +25,15 @@ import CreateModal, { State } from "./CreateModal";
 import StaffsContext from "./StaffsContext";
 import CsvImportModal from "./CsvImportModal";
 import { useSnackbar } from "notistack";
-import { toString, toNumber } from "lodash";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import DownloadIcon from "@mui/icons-material/Download";
+import {
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  SwipeableDrawer,
+} from "@mui/material";
 
 function Copyright(props: any) {
   return (
@@ -99,6 +107,11 @@ const mdTheme = createTheme();
 
 function DashboardContent() {
   const [open, setOpen] = React.useState(true);
+  const [rightState, setRightState] = React.useState(false);
+  const toggleRightDrawer = () => {
+    setRightState(!rightState);
+  };
+
   const toggleDrawer = () => {
     setOpen(!open);
   };
@@ -166,12 +179,83 @@ function DashboardContent() {
               社員・協働者
             </Typography>
             <IconButton color="inherit">
-              <Badge badgeContent={4} color="secondary">
-                <NotificationsIcon />
+              <Badge badgeContent={1} color="secondary">
+                <NotificationsIcon onClick={toggleRightDrawer} />
               </Badge>
             </IconButton>
           </Toolbar>
         </AppBar>
+        <SwipeableDrawer
+          open={rightState}
+          onClose={toggleRightDrawer}
+          onOpen={toggleRightDrawer}
+          anchor="right"
+        >
+          <Box sx={{ width: "100%", maxWidth: 400 }}>
+            <Toolbar
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "flex-end",
+                px: [2],
+              }}
+            ></Toolbar>
+            <Typography
+              variant="subtitle1"
+              component="div"
+              align="inherit"
+              sx={{ width: "100%", padding: [0, 1, 0, 1] }}
+            >
+              ご覧にいただき、
+            </Typography>
+            <Typography
+              variant="subtitle1"
+              component="div"
+              align="inherit"
+              sx={{ width: "100%", padding: [0, 1, 0, 1] }}
+            >
+              ありがとうございます！
+            </Typography>
+            <Typography
+              variant="subtitle1"
+              component="div"
+              align="inherit"
+              gutterBottom
+              sx={{ width: "100%", padding: [0, 1, 0, 1] }}
+            >
+              良かったら、左のメニューにある　
+            </Typography>
+            <Divider />
+            <ListItemButton>
+              <ListItemIcon>
+                <AddCircleOutlineIcon />
+              </ListItemIcon>
+              <ListItemText primary="新規登録" />
+            </ListItemButton>
+            <ListItemButton>
+              <ListItemIcon>
+                <CloudUploadIcon />
+              </ListItemIcon>
+              <ListItemText primary="CSVインポート" />
+            </ListItemButton>
+            <ListItemButton>
+              <ListItemIcon>
+                <DownloadIcon />
+              </ListItemIcon>
+              <ListItemText primary="CSVエクスポート" />
+            </ListItemButton>
+            <Divider />
+            <Typography
+              variant="subtitle1"
+              gutterBottom
+              component="div"
+              align="inherit"
+              sx={{ width: "100%", padding: [1, 1, 0, 1] }}
+            >
+              を使ってみてください。
+            </Typography>
+          </Box>
+        </SwipeableDrawer>
         <Drawer variant="permanent" open={open}>
           <Toolbar
             sx={{

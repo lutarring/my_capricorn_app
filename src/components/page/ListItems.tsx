@@ -57,12 +57,6 @@ const ListItems = () => {
         </ListItemIcon>
         <ListItemText primary="新規登録" />
       </ListItemButton>
-      {/* <ListItemButton>
-        <ListItemIcon>
-          <TocIcon />
-        </ListItemIcon>
-        <ListItemText primary="メンバー一覧" />
-      </ListItemButton> */}
       <ListItemButton onClick={handleCsvModal}>
         <ListItemIcon>
           <CloudUploadIcon />

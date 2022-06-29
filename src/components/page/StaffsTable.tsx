@@ -6,10 +6,19 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Title from './Title';
 import StaffsContext from './StaffsContext';
+import { IconButton, Tooltip } from "@mui/material";
+import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 
 const Staffs = () => {
-  const { staffs } =
-    StaffsContext.useContainer();
+  const { staffs } = StaffsContext.useContainer();
+
+  const handleDelete = (id) => {
+    let confirmed = window.confirm(
+      "削除してもよろしいですか？"
+    );
+    if (!confirmed) return;
+
+  };
 
   return (
     <React.Fragment>
@@ -23,6 +32,7 @@ const Staffs = () => {
             <TableCell>組織</TableCell>
             <TableCell>メールアドレス</TableCell>
             <TableCell>電話番号</TableCell>
+            {/* <TableCell></TableCell> */}
           </TableRow>
         </TableHead>
         <TableBody>
@@ -34,12 +44,19 @@ const Staffs = () => {
               <TableCell>{s.organization}</TableCell>
               <TableCell>{s.mail}</TableCell>
               <TableCell>{s.phone}</TableCell>
+              {/* <TableCell>
+                <Tooltip title="削除" arrow placement="right-start">
+                  <IconButton size="small" onClick={handleDelete}>
+                    <HighlightOffIcon color="info" />
+                  </IconButton>
+                </Tooltip>
+              </TableCell> */}
             </TableRow>
           ))}
         </TableBody>
       </Table>
     </React.Fragment>
   );
-}
+};
 
 export default Staffs;
