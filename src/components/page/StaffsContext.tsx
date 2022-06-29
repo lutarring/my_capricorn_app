@@ -20,16 +20,10 @@ const useStaffsContainer = () => {
   // CSVファイル設定
   const [csvFile, setCsvFile] = useState<File>();
 
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
   const firebaseConfig = {
-    apiKey: "AIzaSyDVbWOjFGqNiw1ZrwEen2a-fC1AFXbYcfM",
-    authDomain: "my-capricorn-app.firebaseapp.com",
-    databaseURL:
-      "https://my-capricorn-app-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "my-capricorn-app",
-    storageBucket: "my-capricorn-app.appspot.com",
-    messagingSenderId: "736317746971",
-    appId: "1:736317746971:web:2482decc19d14cbe6dedbe",
-    measurementId: "G-Y1JLQF5M0M",
+    //TODO
   };
 
   // Initialize Firebase
